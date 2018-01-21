@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "918301194763",
+    "firebase_url": "https://travelweather-2fd73.firebaseio.com",
+    "project_id": "travelweather-2fd73",
+    "storage_bucket": "travelweather-2fd73.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918301194763:android:33cbd77ab3c7f2e1",
+        "android_client_info": {
+          "package_name": "net.holidayweather.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "918301194763-nchm0n76c0iedv92cc0jkb6i91c8aoqh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2gv5qun35nrIjMLu_msF4M0XR-WWO-Q0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,13 +2,15 @@ package com.travelsloth.tripplanner
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.*
+import com.google.firebase.FirebaseApp
 import com.travelsloth.tripplanner.model.DailyReading
 import java.util.*
 import java.util.Calendar.DAY_OF_MONTH
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 /**
@@ -19,18 +21,37 @@ class ViewMonthActivity : Activity() {
 
     val random = Random()
 
+    val TAG = "ViewMonthActivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d("tag", "querying firebase")
+        FirebaseApp.initializeApp(applicationContext)
+        val db = FirebaseFirestore.getInstance()
+
+        val locationRef = db.collection("locations")
+        val query = locationRef.whereEqualTo("name", "Vancouver")
+
+        query.get().addOnCompleteListener {
+            if (it.isSuccessful) {
+                it.result.forEach { document ->
+                    Log.d(TAG, document.id + " => " + document.data)
+                    Log.d(TAG, "name: " + document["name"].toString())
+                }
+            } else {
+                Log.e(  TAG, "error getting data", it.exception)
+            }
+        }
 
         setContentView(R.layout.view_month)
         actionBar.title = "July Average"
         actionBar.subtitle = "New York"
 
-        val chart: BarChart = findViewById(R.id.monthlytempchart)
+        val chart = findViewById<BarChart>(R.id.monthlytempchart)
 
         val dailyReadingList = arrayListOf<DailyReading>()
         for (i in 1..5) {
-
             val cal = Calendar.getInstance()
             cal.time = Date()
             cal.set(Calendar.DAY_OF_MONTH, i)
