@@ -10,12 +10,6 @@
     android:layout_marginTop="3dp">
 
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@mipmap/nyctimessq"
-        android:scaleType="centerCrop"/>
-
     <TextView
         android:id="@+id/info_text"
         android:textColor="@color/primaryTextColor"

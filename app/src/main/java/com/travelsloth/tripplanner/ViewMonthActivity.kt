@@ -2,15 +2,17 @@ package com.travelsloth.tripplanner
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.Description
-import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.FirebaseFirestore
 import com.travelsloth.tripplanner.model.DailyReading
+import timber.log.Timber
 import java.util.*
 import java.util.Calendar.DAY_OF_MONTH
-import com.google.firebase.firestore.FirebaseFirestore
 
 
 /**
@@ -21,65 +23,47 @@ class ViewMonthActivity : Activity() {
 
     val random = Random()
 
-    val TAG = "ViewMonthActivity"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d("tag", "querying firebase")
+        Timber.d("Activity Created")
+
         FirebaseApp.initializeApp(applicationContext)
         val db = FirebaseFirestore.getInstance()
-
-        val locationRef = db.collection("locations")
-        val query = locationRef.whereEqualTo("name", "Vancouver")
-
-        query.get().addOnCompleteListener {
-            if (it.isSuccessful) {
-                it.result.forEach { document ->
-                    Log.d(TAG, document.id + " => " + document.data)
-                    Log.d(TAG, "name: " + document["name"].toString())
-                }
-            } else {
-                Log.e(  TAG, "error getting data", it.exception)
+        val locationRef = db.collection("locations").document("newyork").collection("months")
+        locationRef.addSnapshotListener({ querySnapshot, exception ->
+            if (exception != null) {
+                Timber.e(exception, "error getting data")
+                return@addSnapshotListener
             }
-        }
+
+            val data = querySnapshot.map { doc ->
+                DailyReading(
+                        doc.id.toInt(),
+                        doc.getDouble("averagetemp").toFloat(),
+                        0f
+                )
+            }
+
+            showData(data)
+            data.forEach { row -> Timber.d("data: %s", row) }
+        })
 
         setContentView(R.layout.view_month)
-        actionBar.title = "July Average"
-        actionBar.subtitle = "New York"
+        actionBar.title = "New York"
+        actionBar.subtitle = "Average Temp"
+    }
 
-        val chart = findViewById<BarChart>(R.id.monthlytempchart)
-
-        val dailyReadingList = arrayListOf<DailyReading>()
-        for (i in 1..5) {
-            val cal = Calendar.getInstance()
-            cal.time = Date()
-            cal.set(Calendar.DAY_OF_MONTH, i)
-
-            val rand1 = rand(80, 90)
-            dailyReadingList.add(DailyReading(cal.time, rand1.toFloat(), rand1.toFloat(), 0f))
-        }
-
-        val cal = Calendar.getInstance()
-        val entries = dailyReadingList.map {
-            cal.time = it.readingDate
-            BarEntry(cal.get(DAY_OF_MONTH).toFloat(), it.tempHighCelcius)
-        }
+    fun showData(data: List<DailyReading>) {
+        val entries = data.map { BarEntry(it.month.toFloat(), it.averageTemp) }
 
         val dataSet = BarDataSet(entries, "Temperature (F)")
-
         val lineData = BarData(dataSet)
+
+        val chart = findViewById<BarChart>(R.id.monthlytempchart)
         chart.data = lineData
         chart.isHorizontalScrollBarEnabled = true
 
-        val description = Description()
-        description.text = "Daily Average Temp (F)"
-        chart.description = description
-
         chart.invalidate()
-    }
-
-    fun rand(from: Int, to: Int): Int {
-        return random.nextInt(to - from) + from
     }
 }
