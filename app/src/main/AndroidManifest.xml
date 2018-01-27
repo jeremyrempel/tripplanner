@@ -21,6 +21,12 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+
+        <provider
+            android:name=".SearchProvider"
+            android:authorities="net.holidayweather.search.provider">
+
+        </provider>
     </application>
 
 </manifest>
