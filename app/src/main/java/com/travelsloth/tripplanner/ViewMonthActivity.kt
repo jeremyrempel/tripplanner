@@ -2,6 +2,7 @@ package com.travelsloth.tripplanner
 
 import android.app.Activity
 import android.os.Bundle
+import android.view.Menu
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.BarData
@@ -13,6 +14,9 @@ import com.travelsloth.tripplanner.model.DailyReading
 import timber.log.Timber
 import java.util.*
 import java.util.Calendar.DAY_OF_MONTH
+import android.view.MenuInflater
+
+
 
 
 /**
@@ -55,7 +59,7 @@ class ViewMonthActivity : Activity() {
         })
 
         setContentView(R.layout.view_month)
-        actionBar.subtitle = "Average Temp"
+        actionBar.subtitle = getString(R.string.average_temp)
     }
 
     private fun showData(data: List<DailyReading>, name: String) {
@@ -63,7 +67,7 @@ class ViewMonthActivity : Activity() {
 
         val entries = data.map { BarEntry(it.month.toFloat(), it.averageTemp) }
 
-        val dataSet = BarDataSet(entries, "Temperature (F)")
+        val dataSet = BarDataSet(entries, getString(R.string.farenheit_label))
         dataSet.setColors(intArrayOf(R.color.primaryDarkColor), this)
 
         val chart = findViewById<BarChart>(R.id.monthlytempchart)
@@ -73,5 +77,12 @@ class ViewMonthActivity : Activity() {
         chart.isHorizontalScrollBarEnabled = true
 
         chart.invalidate()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.options_menu, menu)
+
+        return true
     }
 }

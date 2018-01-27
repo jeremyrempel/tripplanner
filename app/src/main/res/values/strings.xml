@@ -1,16 +1,7 @@
 <resources>
     <string name="app_name">Trip Planner</string>
     <string name="title_monthview">Monthly View</string>
-
-    <string-array name="countries_array">
-        <item>Afghanistan</item>
-        <item>Albania</item>
-        <item>Algeria</item>
-        <item>American Samoa</item>
-        <item>Andorra</item>
-        <item>Angola</item>
-        <item>Anguilla</item>
-        <item>Antarctica</item>
-    </string-array>
-
+    <string name="search_title">Search</string>
+    <string name="farenheit_label">Temperature (F)</string>
+    <string name="average_temp">Average Temp</string>
 </resources>
