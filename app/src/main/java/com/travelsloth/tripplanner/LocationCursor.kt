@@ -4,11 +4,14 @@ import android.app.SearchManager
 import android.database.AbstractCursor
 import android.database.DataSetObserver
 import android.provider.BaseColumns
-import com.travelsloth.tripplanner.repository.LocationRepository
+import com.travelsloth.tripplanner.model.Location
+import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
-class LocationCursor(private val locationRepo: LocationRepository) : AbstractCursor() {
+class LocationCursor(private val locationRepo: Flowable<List<Location>>, private val query: String) : AbstractCursor() {
 
     private val columnNames = arrayOf(BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1)
     private var data: Array<Array<String>> = arrayOf()
@@ -18,20 +21,23 @@ class LocationCursor(private val locationRepo: LocationRepository) : AbstractCur
     override fun registerDataSetObserver(observer: DataSetObserver) {
         super.registerDataSetObserver(observer)
 
-        disposable.add(locationRepo.getAllLocations()
-                .map { loclist ->
-                    loclist.map { loc ->
+
+        locationRepo.map { loclist: List<Location> ->
+            loclist
+                    .filter { it.name.contains(query, true) }
+                    .map { loc ->
                         arrayOf(loc.id, loc.name)
                     }
-                }
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         {
                             data = it.toTypedArray()
+                            onChange(true)
                         },
                         { Timber.e(it) }
-                ))
-
-        onChange(true)
+                )
     }
 
     override fun unregisterDataSetObserver(observer: DataSetObserver) {
@@ -39,7 +45,7 @@ class LocationCursor(private val locationRepo: LocationRepository) : AbstractCur
         disposable.dispose()
     }
 
-    override fun getLong(column: Int) = data[position][column].toLong()
+    override fun getLong(column: Int) = position.toLong()
     override fun getCount(): Int = data.count()
     override fun getColumnNames() = columnNames
     override fun getShort(column: Int) = data[position][column].toShort()

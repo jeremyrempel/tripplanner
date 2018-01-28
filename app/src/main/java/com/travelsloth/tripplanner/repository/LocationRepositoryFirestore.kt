@@ -10,12 +10,18 @@ import io.reactivex.Flowable
 /**
  * Created by jrempel on 1/27/18.
  */
-class LocationRepositoryFirestore(private val ds: FirebaseFirestore) : LocationRepository {
+class LocationRepositoryFirestore : LocationRepository {
+
+    private val ds = FirebaseFirestore.getInstance()
+
     override fun getAllLocations(): Flowable<List<Location>> {
-        return Flowable.just(listOf(
-                Location("1", "Vancouver"),
-                Location("1", "New York")
-        ))
+        val stations = ds.collection("stations")
+
+        return RxFirestore.getCollection(stations).map {
+            it.documents.map {
+                Location(it.getString("id"), it.getString("name"))
+            }.toList()
+        }.toFlowable()
     }
 
     override fun getDataForLocation(id: String): Flowable<MonthlyReading> {

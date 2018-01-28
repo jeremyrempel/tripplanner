@@ -15,6 +15,8 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.travelsloth.tripplanner.model.MonthlyAverage
 import com.travelsloth.tripplanner.repository.LocationRepositoryFirestore
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 
@@ -83,14 +85,13 @@ class ViewMonthActivity : Activity() {
     private fun loadDataFromFirebase() {
         val jfk = "USW00094789"
 
-        FirebaseApp.initializeApp(applicationContext)
-        val db = FirebaseFirestore.getInstance()
-
-        val locationRepo = LocationRepositoryFirestore(db)
+        val locationRepo = LocationRepositoryFirestore()
         locationRepo.getDataForLocation(jfk)
                 .doOnSubscribe {
                     /* show loading */
                 }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { dro ->
                             dro?.let { data ->
