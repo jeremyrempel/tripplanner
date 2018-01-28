@@ -30,6 +30,8 @@ dependencies {
     //implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
+    implementation 'com.github.frangsierra:rx2firebase:1.4.0'
+
     // charting
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 

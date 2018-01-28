@@ -7,6 +7,8 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
 import android.provider.BaseColumns
+import com.google.firebase.firestore.FirebaseFirestore
+import com.travelsloth.tripplanner.repository.LocationRepositoryFirestore
 import timber.log.Timber
 
 /**
@@ -26,9 +28,8 @@ class SearchProvider : ContentProvider() {
 
         Timber.d("query: %s", query)
 
-        val cursor = MatrixCursor(arrayOf(BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1))
-        cursor.addRow(arrayOf("1", "New York"))
-        cursor.addRow(arrayOf("2", "Vancouver"))
+        val locationRepo = LocationRepositoryFirestore(FirebaseFirestore.getInstance())
+        val cursor = LocationCursor(locationRepo)
 
         return cursor
     }

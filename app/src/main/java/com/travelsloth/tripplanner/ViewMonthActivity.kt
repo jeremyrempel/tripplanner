@@ -13,7 +13,8 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.travelsloth.tripplanner.model.DailyReading
+import com.travelsloth.tripplanner.model.MonthlyAverage
+import com.travelsloth.tripplanner.repository.LocationRepositoryFirestore
 import timber.log.Timber
 
 
@@ -36,10 +37,10 @@ class ViewMonthActivity : Activity() {
         loadDataFromFirebase()
     }
 
-    private fun showData(data: List<DailyReading>, name: String) {
+    private fun showData(data: List<MonthlyAverage>, name: String) {
         actionBar.title = name
 
-        val entries = data.map { BarEntry(it.month.toFloat(), it.averageTemp) }
+        val entries = data.map { BarEntry(it.month.toFloat(), it.tempF) }
         val dataSet = BarDataSet(entries, getString(R.string.farenheit_label))
         dataSet.setColors(intArrayOf(R.color.primaryDarkColor), this)
 
@@ -80,32 +81,24 @@ class ViewMonthActivity : Activity() {
     }
 
     private fun loadDataFromFirebase() {
+        val jfk = "USW00094789"
+
         FirebaseApp.initializeApp(applicationContext)
         val db = FirebaseFirestore.getInstance()
-        val locationRef = db.collection("stations").document("USW00094789")
-        locationRef.addSnapshotListener({ querySnapshot, exception ->
-            if (exception != null) {
-                Timber.e(exception, "error getting data")
-                return@addSnapshotListener
-            }
 
-            val data = listOf(
-                    DailyReading(1, querySnapshot.getDouble("jan").toFloat(), 0f),
-                    DailyReading(2, querySnapshot.getDouble("feb").toFloat(), 0f),
-                    DailyReading(3, querySnapshot.getDouble("mar").toFloat(), 0f),
-                    DailyReading(4, querySnapshot.getDouble("apr").toFloat(), 0f),
-                    DailyReading(5, querySnapshot.getDouble("may").toFloat(), 0f),
-                    DailyReading(6, querySnapshot.getDouble("jun").toFloat(), 0f),
-                    DailyReading(7, querySnapshot.getDouble("jul").toFloat(), 0f),
-                    DailyReading(8, querySnapshot.getDouble("aug").toFloat(), 0f),
-                    DailyReading(9, querySnapshot.getDouble("sep").toFloat(), 0f),
-                    DailyReading(10, querySnapshot.getDouble("oct").toFloat(), 0f),
-                    DailyReading(11, querySnapshot.getDouble("nov").toFloat(), 0f),
-                    DailyReading(12, querySnapshot.getDouble("dec").toFloat(), 0f)
-            )
-
-            showData(data, querySnapshot.get("name").toString())
-            data.forEach { Timber.d("data: %s", it) }
-        })
+        val locationRepo = LocationRepositoryFirestore(db)
+        locationRepo.getDataForLocation(jfk)
+                .doOnSubscribe {
+                    /* show loading */
+                }
+                .subscribe(
+                        { dro ->
+                            dro?.let { data ->
+                                showData(data.data, data.name)
+                                data.data.forEach { Timber.d("data: %s", it) }
+                            }
+                        },
+                        { Timber.e(it, "Error retrieving data") }
+                )
     }
 }
