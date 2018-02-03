@@ -1,12 +1,10 @@
 package com.travelsloth.tripplanner.model
 
-import java.util.*
-
 /**
  * Created by jrempel on 10/13/17.
  */
-data class DailyReading(
+data class MonthlyAverage(
         val month: Int,
-        val averageTemp: Float,
+        val tempF: Float,
         val precipitationMm: Float
 )
