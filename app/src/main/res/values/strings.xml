@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Trip Planner</string>
+    <string name="title_monthview">Monthly View</string>
+    <string name="search_title">Search Locations</string>
+    <string name="farenheit_label">Temperature (F)</string>
+    <string name="average_temp">Average Temp</string>
+    <string name="search_hint">Search Locations</string>
+</resources>

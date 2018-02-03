@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "618870302365",
+    "firebase_url": "https://holidayweather-e426f.firebaseio.com",
+    "project_id": "holidayweather-e426f",
+    "storage_bucket": "holidayweather-e426f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:618870302365:android:33cbd77ab3c7f2e1",
+        "android_client_info": {
+          "package_name": "net.holidayweather.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "618870302365-6l6hp75cm6tb4mseqbi0s65l3huucio5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7g-mHnFcJNulvqDUa1_yA5tjpMSVQ65Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
