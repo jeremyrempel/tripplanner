@@ -13,10 +13,10 @@ import timber.log.Timber
 
 class LocationCursor(private val locationRepo: Flowable<List<Location>>, private val query: String) : AbstractCursor() {
 
-    private val columnNames = arrayOf(BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1)
+    private val columnNames = arrayOf(BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_INTENT_DATA)
     private var data: Array<Array<String>> = arrayOf()
 
-    val disposable = CompositeDisposable()
+    private val disposable = CompositeDisposable()
 
     override fun registerDataSetObserver(observer: DataSetObserver) {
         super.registerDataSetObserver(observer)
@@ -26,7 +26,7 @@ class LocationCursor(private val locationRepo: Flowable<List<Location>>, private
             loclist
                     .filter { it.name.contains(query, true) }
                     .map { loc ->
-                        arrayOf(loc.id, loc.name)
+                        arrayOf(loc.id, loc.name, loc.id)
                     }
         }
                 .subscribeOn(Schedulers.io())
