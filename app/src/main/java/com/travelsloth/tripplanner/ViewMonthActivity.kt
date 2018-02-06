@@ -9,9 +9,12 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.SearchView
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.HorizontalBarChart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.travelsloth.tripplanner.model.MonthlyAverage
 import com.travelsloth.tripplanner.repository.LocationRepositoryFirestore
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -24,8 +27,8 @@ import timber.log.Timber
  */
 class ViewMonthActivity : Activity() {
 
-    var searchView: SearchView? = null
-    var searchMenu: MenuItem? = null
+    private var searchView: SearchView? = null
+    private var searchMenu: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +40,13 @@ class ViewMonthActivity : Activity() {
 
         // Get the intent, verify the action and get the query
         handleIntent(intent)
+
+        val chart = findViewById<BarChart>(R.id.monthlytempchart)
+        chart.setNoDataText("Search for a location using action bar above")
+
+        val months = arrayListOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+        chart.xAxis.valueFormatter = IAxisValueFormatter { value, _ -> months[value.toInt() - 1] }
+        chart.xAxis.labelCount = 12
     }
 
     private fun showData(data: List<MonthlyAverage>, name: String) {
@@ -46,9 +56,10 @@ class ViewMonthActivity : Activity() {
         val dataSet = BarDataSet(entries, getString(R.string.farenheit_label))
         dataSet.setColors(intArrayOf(R.color.primaryDarkColor), this)
 
-        val chart = findViewById<BarChart>(R.id.monthlytempchart)
+        val chart = findViewById<HorizontalBarChart>(R.id.monthlytempchart)
         chart.data = BarData(dataSet)
         chart.description.isEnabled = false
+        chart.animateXY(3000, 3000)
 
         chart.invalidate()
     }
